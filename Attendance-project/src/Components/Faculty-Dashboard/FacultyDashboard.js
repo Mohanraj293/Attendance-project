@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Table, Input, FormGroup, Label, Spinner } from 'reactstrap';
+import { Button, Table, Spinner } from 'reactstrap';
 import FDash from './FacultyNav';
 import Axios from 'axios';
 
@@ -31,18 +31,35 @@ class FacultyDashboard extends Component {
     }
 
     getAllAttendance = () => {
-        Axios.get("http://localhost:4000/Attendance/").then(res => {
+        Axios.get("http://localhost:4000/Attendance/getAttendance").then(res => {
+
+            let attendance = res.data || []
+            attendance.sort(function (a, b) {
+                return (a.date > b.date) ? -1 : ((a.date < b.date) ? 1 : 0);
+            }).reverse()
+            attendance = this.uniqueAttendanceRecords(attendance)
             this.setState({
-                attendanceData: res.data
+                attendanceData: attendance || []
             }, this.differentiateAttendance)
         })
     }
 
+    uniqueAttendanceRecords = (items) => {
+        const s = new Set();
+        return items.filter((item) => {
+            if (s.has(item.Regno)) {
+                return false;
+            }
+            s.add(item.Regno);
+            return true;
+        });
+    }
+
     differentiateAttendance = () => {
         const { attendanceData } = this.state
-        const present = attendanceData.filter(e => e.isPresent === 'Present')
-        const absent = attendanceData.filter(e => e.isPresent === 'Absent')
-        const onDuty = attendanceData.filter(e => e.isPresent === 'Onduty')
+        const present = attendanceData.filter(e => e.isPresent === 'Present').map(e => e.Regno)
+        const absent = attendanceData.filter(e => e.isPresent === 'Absent').map(e => e.Regno)
+        const onDuty = attendanceData.filter(e => e.isPresent === 'Onduty').map(e => e.Regno)
         this.setState({ present, absent, onDuty })
     }
 
@@ -72,7 +89,6 @@ class FacultyDashboard extends Component {
         newAttendance = [...newAttendance, newRecord]
 
         this.setState({ newAttendance })
-
     }
 
     render() {
@@ -97,7 +113,7 @@ class FacultyDashboard extends Component {
                             <th>Section</th>
                             <th>Gender</th>
                             <th>Mark Attendance</th>
-                            <th>Edit</th>
+                            {/* <th>Edit</th> */}
                         </tr>
                     </thead>
                     <tbody>
@@ -110,25 +126,25 @@ class FacultyDashboard extends Component {
                             <td>{stud.Section}</td>
                             <td>{stud.Gender}</td>
                             <td>
-                                <label class="btn btn-dark Active">
+                                <label className={`btn ${present.includes(stud.Regno) ? 'btn-dark' : ''}`}>
                                     <input value="Present" onChange={(e) => this.handleRadioOnChange(e, stud)} type="radio" name={stud._id}
                                         defaultChecked={present.includes(stud.Regno)}
-                                    /> present
+                                    /> Present
                             </label>
-                                <label class="btn btn-dark">
+                                <label className={`btn ${absent.includes(stud.Regno) ? 'btn-dark' : ''}`}>
                                     <input value="Absent" onChange={(e) => this.handleRadioOnChange(e, stud)} type="radio" name={stud._id}
                                         defaultChecked={absent.includes(stud.Regno)}
                                     /> Absent
                             </label>
-                                <label class="btn btn-dark">
+                                <label className={`btn ${onDuty.includes(stud.Regno) ? 'btn-dark' : ''}`}>
                                     <input value="Onduty" onChange={(e) => this.handleRadioOnChange(e, stud)} type="radio" name={stud._id}
                                         defaultChecked={onDuty.includes(stud.Regno)}
                                     /> Onduty
                             </label>
                             </td>
-                            <td>
+                            {/* <td>
                                 <button className="btn btn-info">Edit</button>
-                            </td>
+                            </td> */}
                         </tr>) : <td>{!loading && 'No results found'}</td>
                         }
 

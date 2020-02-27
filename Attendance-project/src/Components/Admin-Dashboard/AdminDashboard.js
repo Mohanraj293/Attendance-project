@@ -7,19 +7,99 @@ class AdminDashboard extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            //initial values
             modal: false,
+            modal1:false,
             loading: false,
             data:[],
+            editData:[],
+            _id:"",
+            Name:"",
+            Regno:"",
+            Department:"",
+            DOJ:"",
+            DOB:"",
+            Gender:"",
+            Section:"",
+            isEdit:false,
         }
+        this.isCreate = this.isCreate.bind(this)
+        this.isCreateClose = this.isCreateClose.bind(this)
+        this.infoChange = this.infoChange.bind(this)
+        this.infoSubmit = this.infoSubmit.bind(this)
     }
-
-    toggle = () => {
-        this.setState({ modal: false })
+    //modal open
+    isCreate(){
+        this.setState({ modal:true });
     }
-
+    //modal close
+    isCreateClose(){
+        this.setState({ modal:false,
+        _id:"",
+        Name:"",
+        Regno:"",
+        Department:"",
+        DOJ:"",
+        DOB:"",
+        Gender:"",
+        Section:"", });
+    }
+    //getting all values form DB
     componentDidMount(){
         this.getAll();
       }
+    infoChange = event => {
+        const {name,value} = event.target;
+  
+        this.setState({
+            [name] : value
+        })
+   }
+   //Create and update functions
+  infoSubmit = event =>{
+    if(this.state._id === null){
+      let data = {
+          Name: this.state.Name,
+          Regno: this.state.Regno,
+          Department: this.state.Department,
+          DOB: this.state.DOB,
+          DOJ: this.state.DOJ,
+          Gender: this.state.Gender,
+          Section: this.state.Section
+          
+      }
+      this.create(data)
+      }else{
+        let data = {
+            _id:this.state._id,
+            Name: this.state.Name,
+            Regno: this.state.Regno,
+            Department: this.state.Department,
+            DOB: this.state.DOB,
+            DOJ: this.state.DOJ,
+            Gender: this.state.Gender,
+            Section: this.state.Section
+            
+        }
+        this.create(data)
+      }}
+      //Create and Update API call
+      create = data =>{
+          if(!data._id)
+          {
+                Axios.post("http://localhost:4000/",data).then(res =>{
+                this.getAll()
+                console.log(res)
+          })
+        }
+          else
+            {
+              Axios.put("http://localhost:4000/update",data).then(res =>{
+                console.log(res)
+            })
+      }      
+    }  
+      //GET all Function
       getAll(){
         Axios.get("http://localhost:4000/").then(res => {
           this.setState({
@@ -28,16 +108,31 @@ class AdminDashboard extends Component {
         })
     }
 
-    render() {
-        const { className } = this.props;
+    update = (data) =>{
 
-        const { modal, loading } = this.state;
-        console.log(this.state)
+        this.setState({
+            modal:true,
+            ...data
+        })
+    }
+    //delete function
+    del = data => {
+        var option = window.confirm(`Do You Want To Delete ${data.Name}`)
+        if(option){
+            Axios.delete(`http://localhost:4000/delete/${data._id}`).then(res =>{
+                this.getAll();
+            })
+        }
+    }
+
+    render() {
+        const { modal, loading} = this.state;
         return (
             <div>
                 <Navbar />
-                <h3 className="text-center"> <br/>Students list <br/><Button className="btn btn-success">Create</Button></h3><br/>
-                <Table hover striped responsive borderless >
+                <h3 className="text-center"> <br/>Students list <br/><Button className="btn btn-success"
+                onClick={this.isCreate}>Create</Button></h3><br/>
+                <Table hover striped responsive borderless> 
                     <thead className="thead-dark">
                         <tr>
                             <th>#</th>
@@ -61,43 +156,74 @@ class AdminDashboard extends Component {
                             <td>{e.DOB}</td>
                             <td>{e.DOJ}</td>
                             <td>{e.Gender}</td>
-                            <td><Button className="btn btn-info" onClick={this.toggle}>Edit</Button></td>
-                            <td><Button className="btn btn-danger">Delete</Button></td>
-                        </tr>) : <td>{!loading && 'No results found'}</td>
+                            <td><Button className="btn btn-info"
+                            onClick={event =>{this.update(e)}}>Edit</Button></td>
+                            <td><Button className="btn btn-danger"
+                            onClick={evevt =>{this.del(e)}}>Delete</Button></td>
+                        </tr>) : <tr><td>{!loading && 'No results found'}</td></tr>
                         }
-
                     </tbody>
                 </Table>
                 <div>
-                    <Modal isOpen={modal} toggle={this.toggle} className={className}>
-                        <ModalHeader toggle={this.toggle}>Edit Students</ModalHeader>
+                    <Modal isOpen={modal} id="editModal">
+                    <ModalHeader>Create Student</ModalHeader>
                         <ModalBody>
-                            <form>
-                                <div className="form-group">
-                                    <label>Year</label>
-                                    <input type="text" className="form-control" aria-describedby="emailHelp" placeholder="Year" />
-                                </div>
+                            <form onSubmit={this.infoSubmit}>
                                 <div className="form-group">
                                     <label>Name</label>
-                                    <input type="text" className="form-control" placeholder="Name" />
+                                    <input type="text" className="form-control" placeholder="Name" 
+                                    onChange={this.infoChange}
+                                    name = "Name"
+                                    value ={this.state.Name}/>
                                 </div>
                                 <div className="form-group">
-                                    <label>Reg.No</label>
-                                    <input type="text" className="form-control" placeholder="Reg.No" />
+                                    <label>Regno</label>
+                                    <input type="text" className="form-control" placeholder="Regno" 
+                                    onChange={this.infoChange}
+                                    name = "Regno"
+                                    value ={this.state.Regno}/>
                                 </div>
                                 <div className="form-group">
-                                    <label>Dept</label>
-                                    <input type="text" className="form-control" placeholder="Dept" />
+                                    <label>Department</label>
+                                    <input type="text" className="form-control" placeholder="Department" 
+                                    onChange={this.infoChange}
+                                    name = "Department"
+                                    value ={this.state.Department}/>
+                                </div>
+                                <div className="form-group">
+                                    <label>DOB</label>
+                                    <input type="text" className="form-control" placeholder="DOB" 
+                                    onChange={this.infoChange}
+                                    name = "DOB"
+                                    value ={this.state.DOB}/>
+                                </div>
+                                <div className="form-group">
+                                    <label>DOJ</label>
+                                    <input type="text" className="form-control" placeholder="DOJ"
+                                    onChange={this.infoChange}
+                                    name = "DOJ"
+                                    value ={this.state.DOJ}/>
                                 </div>
                                 <div className="form-group">
                                     <label>Gender</label>
-                                    <input type="text" className="form-control" placeholder="Gender" />
+                                    <input type="text" className="form-control" placeholder="Gender" 
+                                    onChange={this.infoChange}
+                                    name = "Gender"
+                                    value ={this.state.Gender}/>
                                 </div>
+                                <div className="form-group">
+                                    <label>Section</label>
+                                    <input type="text" className="form-control" placeholder="Section" 
+                                    onChange={this.infoChange}
+                                    name = "Section"
+                                    value ={this.state.Section}/>
+                                </div>
+                                <ModalFooter>
+                                    <Button color="secondary" onClick={this.isCreateClose}>close</Button>
+                                    <Button type="submit" color="success">Submit</Button>
+                                </ModalFooter>
                             </form>
                         </ModalBody>
-                        <ModalFooter>
-                            <Button color="success">update</Button>{' '}
-                        </ModalFooter>
                     </Modal>
                 </div>
             </div>

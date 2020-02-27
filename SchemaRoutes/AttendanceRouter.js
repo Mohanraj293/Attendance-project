@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const router = express.Router();
 const attendance = require('../Schema/AttendanceSchema');
 
@@ -26,8 +27,10 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         const getAll = await attendance.find();
+        console.log(getAll)
         res.status(200).json(getAll);
     } catch (err) {
+        console.log(err)
         res.json({ "err": err });
     }
 });
@@ -36,9 +39,23 @@ router.get('/', async (req, res) => {
 router.post('/setAttendance', async (req, res) => {
     try {
         let records = req.body
-        console.log(records)
-        res.status(200).json({ success: true });
+        attendance.insertMany(records).then(() => {
+            res.status(200).json({ success: true });
+        })
     } catch (err) {
+        res.json({ "err": err });
+    }
+});
+
+
+router.get('/getAttendance', async (req, res) => {
+    console.log('/getAttendance')
+    try {
+        const getAll = await attendance.find();
+        console.log(getAll)
+        res.status(200).json(getAll);
+    } catch (err) {
+        console.log(err)
         res.json({ "err": err });
     }
 });
