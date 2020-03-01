@@ -9,6 +9,7 @@ import {
   NavLink,
   Button
 } from 'reactstrap';
+import { MDBBtn } from 'mdbreact';
 
 
 
@@ -19,13 +20,13 @@ const ADash = (props) => {
     const toggle = () => setIsOpen(!isOpen);
   return (
     <div>
-      <Navbar color="primary" dark expand="md">
+      <Navbar fixed="top" color="primary" dark expand="md">
         <NavbarBrand href="/admin-dashboard">AIHT Attendance</NavbarBrand>
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>
           <Nav className="ml-auto" navbar>
             <NavItem>
-              <Button  href="#" className="btn btn-danger">LOGOUT</Button>
+              <MDBBtn  href="#" color="orange">LOGOUT</MDBBtn>
             </NavItem>
           </Nav>
         </Collapse>

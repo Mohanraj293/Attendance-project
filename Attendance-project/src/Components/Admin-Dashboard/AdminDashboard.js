@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Table, Spinner } from 'reactstrap';
+import { Modal, ModalHeader, ModalFooter, ModalBody, Table, Spinner, } from 'reactstrap';
 import Navbar from '../Navbar'
 import Axios from 'axios';
+import '../../App.css';
+import { MDBBtn, MDBIcon,MDBInput,MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem } from "mdbreact";
 
 class AdminDashboard extends Component {
     constructor(props) {
@@ -22,6 +24,7 @@ class AdminDashboard extends Component {
             Gender:"",
             Section:"",
             isEdit:false,
+            mode:'update',
         }
         this.isCreate = this.isCreate.bind(this)
         this.isCreateClose = this.isCreateClose.bind(this)
@@ -30,7 +33,15 @@ class AdminDashboard extends Component {
     }
     //modal open
     isCreate(){
-        this.setState({ modal:true });
+        this.setState({ modal:true, mode:'create' });
+    }
+
+    isUpdate = (data) =>{
+        this.setState({
+            modal:true,
+            ...data,
+            mode:'update'
+        })
     }
     //modal close
     isCreateClose(){
@@ -108,13 +119,7 @@ class AdminDashboard extends Component {
         })
     }
 
-    update = (data) =>{
-
-        this.setState({
-            modal:true,
-            ...data
-        })
-    }
+  
     //delete function
     del = data => {
         var option = window.confirm(`Do You Want To Delete ${data.Name}`)
@@ -125,13 +130,53 @@ class AdminDashboard extends Component {
         }
     }
 
+    viewButton(){
+        if(this.state.mode==='update'){
+            return(
+            <MDBBtn color="success" onClick={this.infoSubmit}>Update</MDBBtn>)
+        }
+        else{
+            return(
+            <MDBBtn color="indigo" onClick={this.infoSubmit}>Create</MDBBtn>)
+        }
+    }
+    modalHead(){
+        if(this.state.mode==='update'){
+            return(
+                <ModalHeader toggle={this.isCreateClose}>Update Students</ModalHeader>
+            )
+        }
+        else{
+            return(
+                <ModalHeader   toggle={this.isCreateClose}>Creates Students</ModalHeader>
+            )
+        }
+    }
+
     render() {
         const { modal, loading} = this.state;
         return (
             <div>
-                <Navbar />
-                <h3 className="text-center"> <br/>Students list <br/><Button className="btn btn-success"
-                onClick={this.isCreate}>Create</Button></h3><br/>
+                <div>
+                    <Navbar /><br/><br/> <br/> <br/>
+                </div>
+                <h3 className="text-center">Students list<MDBBtn className="btn btn-success"
+                onClick={this.isCreate}><MDBIcon icon="plus-circle" /> Create</MDBBtn>
+                <MDBDropdown>
+                <MDBDropdownToggle caret color="primary">
+                   Choose Department
+                </MDBDropdownToggle>
+                <MDBDropdownMenu basic>
+                    <MDBDropdownItem>Information Technology</MDBDropdownItem>
+                    <MDBDropdownItem>Computer Science and Engineering</MDBDropdownItem>
+                    <MDBDropdownItem>Civil Engineering</MDBDropdownItem>
+                    <MDBDropdownItem>Electrical and Communication Engineering</MDBDropdownItem>
+                    <MDBDropdownItem>Electrical and Electronics Engineering</MDBDropdownItem>
+                    <MDBDropdownItem>Mechanical Engineering</MDBDropdownItem>
+                    <MDBDropdownItem divider/>
+                    <MDBDropdownItem>Architechture</MDBDropdownItem>
+                </MDBDropdownMenu>
+            </MDBDropdown></h3>
                 <Table hover striped responsive borderless> 
                     <thead className="thead-dark">
                         <tr>
@@ -141,6 +186,7 @@ class AdminDashboard extends Component {
                             <th>Department</th>
                             <th>DOB</th>
                             <th>DOJ</th>
+                            <th>Section</th>
                             <th>Gender</th>
                             <th>Edit</th>
                             <th>Delete</th>
@@ -155,72 +201,64 @@ class AdminDashboard extends Component {
                             <td>{e.Department}</td>
                             <td>{e.DOB}</td>
                             <td>{e.DOJ}</td>
+                            <td>{e.Section}</td>
                             <td>{e.Gender}</td>
-                            <td><Button className="btn btn-info"
-                            onClick={event =>{this.update(e)}}>Edit</Button></td>
-                            <td><Button className="btn btn-danger"
-                            onClick={evevt =>{this.del(e)}}>Delete</Button></td>
+                            <td><a color="warning" onClick={event =>{this.isUpdate(e)}}><MDBIcon className="icon" data-toggle="tooltip" title="Edit" color="#xE147" icon="edit"/></a></td>
+                            <td><a color="danger"  onClick={evevt =>{this.del(e)}}><MDBIcon className="icon1" data-toggle="tooltip" title="Delete" far icon="trash-alt" /></a></td>
                         </tr>) : <tr><td>{!loading && 'No results found'}</td></tr>
                         }
                     </tbody>
                 </Table>
                 <div>
-                    <Modal isOpen={modal} id="editModal">
-                    <ModalHeader>Create Student</ModalHeader>
+                    <Modal isOpen={modal}>
+                    {this.modalHead()}
                         <ModalBody>
                             <form onSubmit={this.infoSubmit}>
                                 <div className="form-group">
-                                    <label>Name</label>
-                                    <input type="text" className="form-control" placeholder="Name" 
+                                    <MDBInput label="Name" type="text" className="form-control" placeholder="Name" 
                                     onChange={this.infoChange}
                                     name = "Name"
                                     value ={this.state.Name}/>
                                 </div>
                                 <div className="form-group">
-                                    <label>Regno</label>
-                                    <input type="text" className="form-control" placeholder="Regno" 
+                                    <MDBInput label="Register"  type="text" className="form-control" placeholder="Regno" 
                                     onChange={this.infoChange}
                                     name = "Regno"
                                     value ={this.state.Regno}/>
                                 </div>
                                 <div className="form-group">
-                                    <label>Department</label>
-                                    <input type="text" className="form-control" placeholder="Department" 
+                                    <MDBInput label="Department"  type="text" className="form-control" placeholder="Department" 
                                     onChange={this.infoChange}
                                     name = "Department"
                                     value ={this.state.Department}/>
                                 </div>
                                 <div className="form-group">
-                                    <label>DOB</label>
-                                    <input type="text" className="form-control" placeholder="DOB" 
+                                    <MDBInput label="Date OF Birth"  type="text" className="form-control" placeholder="DOB" 
                                     onChange={this.infoChange}
                                     name = "DOB"
                                     value ={this.state.DOB}/>
                                 </div>
                                 <div className="form-group">
-                                    <label>DOJ</label>
-                                    <input type="text" className="form-control" placeholder="DOJ"
+                                    <MDBInput label="Date Of Join"  type="text" className="form-control" placeholder="DOJ"
                                     onChange={this.infoChange}
                                     name = "DOJ"
                                     value ={this.state.DOJ}/>
                                 </div>
                                 <div className="form-group">
-                                    <label>Gender</label>
-                                    <input type="text" className="form-control" placeholder="Gender" 
+                                    <MDBInput label="Gender"  type="text" className="form-control" placeholder="Gender" 
                                     onChange={this.infoChange}
                                     name = "Gender"
                                     value ={this.state.Gender}/>
                                 </div>
                                 <div className="form-group">
-                                    <label>Section</label>
-                                    <input type="text" className="form-control" placeholder="Section" 
+                                    <MDBInput label="Section"  type="text" className="form-control" placeholder="Section" 
                                     onChange={this.infoChange}
                                     name = "Section"
                                     value ={this.state.Section}/>
                                 </div>
                                 <ModalFooter>
-                                    <Button color="secondary" onClick={this.isCreateClose}>close</Button>
-                                    <Button type="submit" color="success">Submit</Button>
+                                    <MDBBtn color="blue-grey" onClick={this.isCreateClose}>close</MDBBtn>
+                                    {this.viewButton()}
                                 </ModalFooter>
                             </form>
                         </ModalBody>
