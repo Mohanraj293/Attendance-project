@@ -1,0 +1,29 @@
+db.students.aggregate([
+    {
+        $lookup:{
+            from: "attendances",      
+            localField: "Regno",  
+            foreignField: "Regno", 
+            as: "status"        
+        }
+    },
+    {   $unwind:"$status" },   
+    {
+        $lookup:{
+            from: "students", 
+            localField: "Regno", 
+            foreignField: "Regno",
+            as: "stu_info"
+        }
+    },
+    {   $unwind:"$stu_info" },
+    {   
+        $project:{
+            Name : 1,
+            Regno : 1,
+            Department : 1,
+            Section: 1,
+            isPresent : "$user_info.phone",
+        } 
+    }
+]);

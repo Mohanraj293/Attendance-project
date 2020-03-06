@@ -20,14 +20,7 @@ class status extends Component {
     const dateTimeString = date.toDateString() //+ '  ' + date.toLocaleTimeString()
     return (
       <Fragment>
-        <Navbar />
-        <div className="calendar">
-          <Calendar
-            onChange={this.onChange}
-            value={this.state.date}
-          />
-          {dateTimeString}
-        </div>
+        <Navbar /><br/><br/>
         <StatusList />
       </Fragment>
     );

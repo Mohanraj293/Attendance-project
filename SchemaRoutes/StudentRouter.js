@@ -24,9 +24,20 @@ router.post('/', async (req, res) => {
 });
 
 //GET  method
+// router.get('/', async (req, res) => {
+//     try {
+//         const getAll = await students.find();
+//         res.status(200).json(getAll);
+//     } catch (err) {
+//         res.json({ "err": err });
+//     }
+// });
+
+//GET  method with filter
 router.get('/', async (req, res) => {
+    const query = req.query
     try {
-        const getAll = await students.find();
+        const getAll = await students.find(query);
         res.status(200).json(getAll);
     } catch (err) {
         res.json({ "err": err });

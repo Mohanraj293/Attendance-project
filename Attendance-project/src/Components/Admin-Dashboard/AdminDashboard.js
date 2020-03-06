@@ -1,9 +1,31 @@
 import React, { Component } from 'react';
-import { Modal, ModalHeader, ModalFooter, ModalBody, Table, Spinner, } from 'reactstrap';
+import { Modal, ModalHeader, ModalFooter, ModalBody, Table, Spinner, Row, Col, FormGroup, Label, Input } from 'reactstrap';
 import Navbar from '../Navbar'
 import Axios from 'axios';
 import '../../App.css';
-import { MDBBtn, MDBIcon,MDBInput,MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem } from "mdbreact";
+import { MDBBtn, MDBIcon, MDBInput, MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem } from "mdbreact";
+
+
+const clearNullProp = (obj = {}) => {
+    for (const key in obj) {
+        if (!obj[key]) {
+            delete obj[key]
+        }
+    }
+    return obj
+}
+
+const getDateLabel = (date, format) => {
+    let dateObj = new Date(date)
+    if (format === 'slash') return dateObj.toLocaleDateString()
+    return dateObj.toDateString()
+}
+
+const initFilterObj = {
+    Department: '',
+    DOJ: '',
+    Section: ''
+}
 
 class AdminDashboard extends Component {
     constructor(props) {
@@ -11,78 +33,63 @@ class AdminDashboard extends Component {
         this.state = {
             //initial values
             modal: false,
-            modal1:false,
+            modal1: false,
             loading: false,
-            data:[],
-            editData:[],
-            _id:"",
-            Name:"",
-            Regno:"",
-            Department:"",
-            DOJ:"",
-            DOB:"",
-            Gender:"",
-            Section:"",
-            isEdit:false,
-            mode:'update',
+            data: [],
+            editData: [],
+            _id: "",
+            Name: "",
+            Regno: "",
+            Department: "",
+            DOJ: "",
+            DOB: "",
+            Gender: "",
+            Section: "",
+            isEdit: false,
+            mode: 'update',
+            filterObj: { ...initFilterObj }
         }
-        this.isCreate = this.isCreate.bind(this)
         this.isCreateClose = this.isCreateClose.bind(this)
         this.infoChange = this.infoChange.bind(this)
         this.infoSubmit = this.infoSubmit.bind(this)
     }
-    //modal open
-    isCreate(){
-        this.setState({ modal:true, mode:'create' });
-    }
-
-    isUpdate = (data) =>{
+    //modal update
+    isUpdate = (data) => {
         this.setState({
-            modal:true,
+            modal: true,
             ...data,
-            mode:'update'
+            mode: 'update'
         })
     }
     //modal close
-    isCreateClose(){
-        this.setState({ modal:false,
-        _id:"",
-        Name:"",
-        Regno:"",
-        Department:"",
-        DOJ:"",
-        DOB:"",
-        Gender:"",
-        Section:"", });
+    isCreateClose() {
+        this.setState({
+            modal: false,
+            _id: "",
+            Name: "",
+            Regno: "",
+            Department: "",
+            DOJ: "",
+            DOB: "",
+            Gender: "",
+            Section: "",
+        });
     }
     //getting all values form DB
-    componentDidMount(){
+    componentDidMount() {
         this.getAll();
-      }
+    }
     infoChange = event => {
-        const {name,value} = event.target;
-  
+        const { name, value } = event.target;
+
         this.setState({
-            [name] : value
+            [name]: value
         })
-   }
-   //Create and update functions
-  infoSubmit = event =>{
-    if(this.state._id === null){
-      let data = {
-          Name: this.state.Name,
-          Regno: this.state.Regno,
-          Department: this.state.Department,
-          DOB: this.state.DOB,
-          DOJ: this.state.DOJ,
-          Gender: this.state.Gender,
-          Section: this.state.Section
-          
-      }
-      this.create(data)
-      }else{
+    }
+    //Create and update functions
+    infoSubmit = event => {
         let data = {
-            _id:this.state._id,
+            _id: this.state._id,
             Name: this.state.Name,
             Regno: this.state.Regno,
             Department: this.state.Department,
@@ -90,94 +97,145 @@ class AdminDashboard extends Component {
             DOJ: this.state.DOJ,
             Gender: this.state.Gender,
             Section: this.state.Section
-            
         }
         this.create(data)
-      }}
-      //Create and Update API call
-      create = data =>{
-          if(!data._id)
-          {
-                Axios.post("http://localhost:4000/",data).then(res =>{
+        this.isCreateClose()
+    }
+
+    //Create and Update API call
+    create = data => {
+            Axios.put("http://localhost:4000/update", data).then(res => {
                 this.getAll()
-                console.log(res)
-          })
-        }
-          else
-            {
-              Axios.put("http://localhost:4000/update",data).then(res =>{
-                console.log(res)
             })
-      }      
-    }  
-      //GET all Function
-      getAll(){
-        Axios.get("http://localhost:4000/").then(res => {
-          this.setState({
-            data:res.data
-          })
+        }
+    //GET all Function
+    getAll() {
+        let { filterObj } = this.state
+        //   clear null properties
+        filterObj = clearNullProp(filterObj)
+        Axios.get("http://localhost:4000/", { params: filterObj }).then(res => {
+            this.setState({
+                data: res.data
+            })
         })
     }
 
-  
+
     //delete function
     del = data => {
         var option = window.confirm(`Do You Want To Delete ${data.Name}`)
-        if(option){
-            Axios.delete(`http://localhost:4000/delete/${data._id}`).then(res =>{
+        if (option) {
+            Axios.delete(`http://localhost:4000/delete/${data._id}`).then(res => {
                 this.getAll();
             })
         }
     }
 
-    viewButton(){
-        if(this.state.mode==='update'){
-            return(
-            <MDBBtn color="success" onClick={this.infoSubmit}>Update</MDBBtn>)
-        }
-        else{
-            return(
-            <MDBBtn color="indigo" onClick={this.infoSubmit}>Create</MDBBtn>)
-        }
-    }
-    modalHead(){
-        if(this.state.mode==='update'){
-            return(
-                <ModalHeader toggle={this.isCreateClose}>Update Students</ModalHeader>
-            )
-        }
-        else{
-            return(
-                <ModalHeader   toggle={this.isCreateClose}>Creates Students</ModalHeader>
-            )
-        }
+    // viewButton() {
+    //     if (this.state.mode === 'update') {
+    //         return (
+    //             <MDBBtn color="success" onClick={this.infoSubmit}>Update</MDBBtn>)
+    //     }
+    //     else {
+    //         return (
+    //             <MDBBtn color="indigo" onClick={this.infoSubmit}>Create</MDBBtn>)
+    //     }
+    // }
+    // modalHead() {
+    //     if (this.state.mode === 'update') {
+    //         return (
+    //             <ModalHeader toggle={this.isCreateClose}>Update Students</ModalHeader>
+    //         )
+    //     }
+    //     else {
+    //         return (
+    //             <ModalHeader toggle={this.isCreateClose}>Creates Students</ModalHeader>
+    //         )
+    //     }
+    // }
+
+    // filter operations
+
+    handleFilterReset = () => {
+        this.setState({ filterObj: { ...initFilterObj } }, this.getAll)
     }
 
+    handleFilterDepartmentFilterChange = (e) => {
+        const { value } = e.target
+
+        let { filterObj } = this.state
+
+        filterObj = { ...filterObj, Department: value }
+
+        this.setState({ filterObj }, this.getAll)
+    }
+    handleFilterYearFilterChange = (e) => {
+        const { value } = e.target
+
+        let { filterObj } = this.state
+
+        filterObj = { ...filterObj, DOJ: value }
+
+        this.setState({ filterObj }, this.getAll)
+    }
+    handleFilterSectionFilterChange = (e) => {
+        const { value } = e.target
+
+        let { filterObj } = this.state
+
+        filterObj = { ...filterObj, Section: value }
+
+        this.setState({ filterObj }, this.getAll)
+    }
+
+
     render() {
-        const { modal, loading} = this.state;
+        const { modal, loading } = this.state;
+        console.log(this.state)
         return (
             <div>
-                <div>
-                    <Navbar /><br/><br/> <br/> <br/>
+                <div style={{ marginBottom: '90px' }} >
+                    <Navbar />
                 </div>
-                <h3 className="text-center">Students list<MDBBtn className="btn btn-success"
-                onClick={this.isCreate}><MDBIcon icon="plus-circle" /> Create</MDBBtn>
-                <MDBDropdown>
-                <MDBDropdownToggle caret color="primary">
-                   Choose Department
-                </MDBDropdownToggle>
-                <MDBDropdownMenu basic>
-                    <MDBDropdownItem>Information Technology</MDBDropdownItem>
-                    <MDBDropdownItem>Computer Science and Engineering</MDBDropdownItem>
-                    <MDBDropdownItem>Civil Engineering</MDBDropdownItem>
-                    <MDBDropdownItem>Electrical and Communication Engineering</MDBDropdownItem>
-                    <MDBDropdownItem>Electrical and Electronics Engineering</MDBDropdownItem>
-                    <MDBDropdownItem>Mechanical Engineering</MDBDropdownItem>
-                    <MDBDropdownItem divider/>
-                    <MDBDropdownItem>Architechture</MDBDropdownItem>
-                </MDBDropdownMenu>
-            </MDBDropdown></h3>
-                <Table hover striped responsive borderless> 
+
+
+                <h3 className="text-center">Students list</h3>
+                <Row>
+                    <Col sm={3} >
+                        <FormGroup>
+                            <Input type="select" onChange={this.handleFilterDepartmentFilterChange} name="departmentFilter" id="departmentFilter">
+                                <option value="" >Select Department</option>
+                                <option value="CSE" >CSE</option>
+                                <option value="IT" >IT</option>
+                            </Input>
+                        </FormGroup>
+                    </Col>
+                    <Col sm={3} >
+                        <FormGroup>
+                            <Input type="select" onChange={this.handleFilterYearFilterChange} name="departmentFilter" id="departmentFilter">
+                                <option value="" >Select Year</option>
+                                <option value="2018-05-05T00:00:00.000+00:00" >1st Year</option>
+                                <option value="2017-05-05T00:00:00.000+00:00" >2nd Year</option>
+                                <option value="2016-05-05T00:00:00.000+00:00" >3rd Year</option>
+                                <option value="2015-05-05T00:00:00.000+00:00" >4th Year</option>
+                            </Input>
+                        </FormGroup>
+                    </Col>
+                    <Col sm={3} >
+                        <FormGroup>
+                            <Input type="select" onChange={this.handleFilterSectionFilterChange} name="departmentFilter" id="departmentFilter">
+                                <option value="" >Select Section</option>
+                                <option value="A" >A</option>
+                                <option value="B" >B</option>
+                            </Input>
+                        </FormGroup>
+                    </Col>
+                    <Col>
+                        <MDBBtn color="deep-orange" onClick={this.handleFilterReset}>Reset</MDBBtn>
+                    </Col>
+                </Row>
+
+                <Table hover striped responsive borderless>
                     <thead className="thead-dark">
                         <tr>
                             <th>#</th>
@@ -193,72 +251,72 @@ class AdminDashboard extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {loading && <Spinner color="success"/>}
-                        {this.state.data.length > 0 && !loading ? this.state.data.map((e, i) => <tr key = {e._id}>
+                        {loading && <Spinner color="success" />}
+                        {this.state.data.length > 0 && !loading ? this.state.data.map((e, i) => <tr key={e._id}>
                             <td>{i + 1}</td>
                             <td>{e.Name}</td>
                             <td>{e.Regno}</td>
                             <td>{e.Department}</td>
-                            <td>{e.DOB}</td>
-                            <td>{e.DOJ}</td>
+                            <td>{getDateLabel(e.DOB, 'slash')}</td>
+                            <td>{getDateLabel(e.DOJ)}</td>
                             <td>{e.Section}</td>
                             <td>{e.Gender}</td>
-                            <td><a color="warning" onClick={event =>{this.isUpdate(e)}}><MDBIcon className="icon" data-toggle="tooltip" title="Edit" color="#xE147" icon="edit"/></a></td>
-                            <td><a color="danger"  onClick={evevt =>{this.del(e)}}><MDBIcon className="icon1" data-toggle="tooltip" title="Delete" far icon="trash-alt" /></a></td>
+                            <td><a color="warning" onClick={event => { this.isUpdate(e) }}><MDBIcon className="icon" data-toggle="tooltip" title="Edit" color="#xE147" icon="edit" /></a></td>
+                            <td><a color="danger" onClick={evevt => { this.del(e) }}><MDBIcon className="icon1" data-toggle="tooltip" title="Delete" far icon="trash-alt" /></a></td>
                         </tr>) : <tr><td>{!loading && 'No results found'}</td></tr>
                         }
                     </tbody>
                 </Table>
                 <div>
                     <Modal isOpen={modal}>
-                    {this.modalHead()}
+                    <ModalHeader toggle={this.isCreateClose}>Update Students</ModalHeader>
                         <ModalBody>
                             <form onSubmit={this.infoSubmit}>
                                 <div className="form-group">
-                                    <MDBInput label="Name" type="text" className="form-control" placeholder="Name" 
-                                    onChange={this.infoChange}
-                                    name = "Name"
-                                    value ={this.state.Name}/>
+                                    <MDBInput label="Name" type="text" className="form-control" placeholder="Name"
+                                        onChange={this.infoChange}
+                                        name="Name"
+                                        value={this.state.Name} />
                                 </div>
                                 <div className="form-group">
-                                    <MDBInput label="Register"  type="text" className="form-control" placeholder="Regno" 
-                                    onChange={this.infoChange}
-                                    name = "Regno"
-                                    value ={this.state.Regno}/>
+                                    <MDBInput label="Register" type="text" className="form-control" placeholder="Regno"
+                                        onChange={this.infoChange}
+                                        name="Regno"
+                                        value={this.state.Regno} />
                                 </div>
                                 <div className="form-group">
-                                    <MDBInput label="Department"  type="text" className="form-control" placeholder="Department" 
-                                    onChange={this.infoChange}
-                                    name = "Department"
-                                    value ={this.state.Department}/>
+                                    <MDBInput label="Department" type="text" className="form-control" placeholder="Department"
+                                        onChange={this.infoChange}
+                                        name="Department"
+                                        value={this.state.Department} />
                                 </div>
                                 <div className="form-group">
-                                    <MDBInput label="Date OF Birth"  type="text" className="form-control" placeholder="DOB" 
-                                    onChange={this.infoChange}
-                                    name = "DOB"
-                                    value ={this.state.DOB}/>
+                                    <MDBInput label="Date OF Birth" type="text" className="form-control" placeholder="DOB"
+                                        onChange={this.infoChange}
+                                        name="DOB"
+                                        value={this.state.DOB} />
                                 </div>
                                 <div className="form-group">
-                                    <MDBInput label="Date Of Join"  type="text" className="form-control" placeholder="DOJ"
-                                    onChange={this.infoChange}
-                                    name = "DOJ"
-                                    value ={this.state.DOJ}/>
+                                    <MDBInput label="Date Of Join" type="text" className="form-control" placeholder="DOJ"
+                                        onChange={this.infoChange}
+                                        name="DOJ"
+                                        value={this.state.DOJ} />
                                 </div>
                                 <div className="form-group">
-                                    <MDBInput label="Gender"  type="text" className="form-control" placeholder="Gender" 
-                                    onChange={this.infoChange}
-                                    name = "Gender"
-                                    value ={this.state.Gender}/>
+                                    <MDBInput label="Gender" type="text" className="form-control" placeholder="Gender"
+                                        onChange={this.infoChange}
+                                        name="Gender"
+                                        value={this.state.Gender} />
                                 </div>
                                 <div className="form-group">
-                                    <MDBInput label="Section"  type="text" className="form-control" placeholder="Section" 
-                                    onChange={this.infoChange}
-                                    name = "Section"
-                                    value ={this.state.Section}/>
+                                    <MDBInput label="Section" type="text" className="form-control" placeholder="Section"
+                                        onChange={this.infoChange}
+                                        name="Section"
+                                        value={this.state.Section} />
                                 </div>
                                 <ModalFooter>
                                     <MDBBtn color="blue-grey" onClick={this.isCreateClose}>close</MDBBtn>
-                                    {this.viewButton()}
+                                    <MDBBtn color="success" onClick={this.infoSubmit}>Update</MDBBtn>
                                 </ModalFooter>
                             </form>
                         </ModalBody>

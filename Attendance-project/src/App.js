@@ -23,8 +23,6 @@ function App() {
         <Route exact path="/faculty-dashboard" component={FacultyDashboard}></Route>
         <Route exact path="/admin-login" component={AdminLogin}></Route>
         <Route path="/status" component={status}></Route>
-        {/* <Route path="/statusList" component={StatList}></Route> */}
-
         <Route path="*" component={PageNotFound}></Route>
       </Switch>
     </Router >

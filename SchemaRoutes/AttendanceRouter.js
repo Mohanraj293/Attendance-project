@@ -24,7 +24,7 @@ router.post('/', async (req, res) => {
 });
 
 //GET  method
-router.get('/', async (req, res) => {
+router.get('/get', async (req, res) => {
     try {
         const getAll = await attendance.find();
         console.log(getAll)
@@ -49,7 +49,7 @@ router.post('/setAttendance', async (req, res) => {
 
 
 router.get('/getAttendance', async (req, res) => {
-    console.log('/getAttendance')
+    // console.log('/getAttendance')
     try {
         const getAll = await attendance.find();
         console.log(getAll)
