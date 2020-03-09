@@ -3,7 +3,7 @@ import { Modal, ModalHeader, ModalFooter, ModalBody, Table, Spinner, Row, Col, F
 import Navbar from '../Navbar'
 import Axios from 'axios';
 import '../../App.css';
-import Calendar from 'react-calendar';
+import Calendar from 'react-datepicker';
 import {
     MDBIcon, MDBBtn, MDBInput, MDBCard, MDBCardBody, MDBCardImage, MDBCardTitle, MDBCardText, MDBCol,
     MDBRow, Container
@@ -164,16 +164,16 @@ class StatusList extends Component {
                 </Row>
                 <MDBRow className="row" style={{ marginLeft: '10px' }}>
                     {loading && <Spinner color="success" />}
+            
                     {
                         this.state.data.length > 0 && !loading ? this.state.data.map((e, i) =>
                             <MDBCol className="col-sm-3 mb-4">
-                                <MDBCard style={{ width: "17rem" }}>
+                                <MDBCard style={{ width: "18rem" }}>
                                     <MDBCardBody>
                                         <MDBCardTitle onClick={this.studentModal}>{e.Name}</MDBCardTitle>
-                                        <MDBCardText>Regno: {e.Regno}</MDBCardText>
-                                        <MDBCardText>Dept: {e.Department}</MDBCardText>
-                                        <MDBCardText>Gender: {e.Gender}</MDBCardText>
-                                        <MDBCardText>Section: {e.Section}</MDBCardText>
+                                        <MDBCardText>Regno : {e.Regno}</MDBCardText>
+                                        <MDBCardText>Dept : {e.Department} - {e.Section} Section </MDBCardText>
+                                        {/* <MDBCardText>Gender: {e.Gender}</MDBCardText> */}
                                     </MDBCardBody>
                                 </MDBCard>
                             </MDBCol>
@@ -186,6 +186,9 @@ class StatusList extends Component {
                             <ModalHeader>Status</ModalHeader>
                             <div className="calendar">
                                 <Calendar
+                                    dayClassName={date =>
+                                        { console.log(date); return date.getDate(date) < Math.random() * 31 ? "random" : undefined}
+                                      }
                                     onChange={this.onChange}
                                     value={this.state.date}
                                 />

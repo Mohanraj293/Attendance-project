@@ -3,7 +3,7 @@ import { Modal, ModalHeader, ModalFooter, ModalBody, Table, Spinner, Row, Col, F
 import Navbar from '../Navbar'
 import Axios from 'axios';
 import '../../App.css';
-import { MDBBtn, MDBIcon, MDBInput, MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem } from "mdbreact";
+import { MDBBtn, MDBIcon, MDBInput } from "mdbreact";
 
 
 const clearNullProp = (obj = {}) => {
@@ -52,6 +52,12 @@ class AdminDashboard extends Component {
         this.isCreateClose = this.isCreateClose.bind(this)
         this.infoChange = this.infoChange.bind(this)
         this.infoSubmit = this.infoSubmit.bind(this)
+        this.isCreate = this.isCreate.bind(this)
+    }
+
+    isCreate() {
+        this.setState({ modal: true });
+        this.setState({ modal: true, mode: 'create' });
     }
     //modal update
     isUpdate = (data) => {
@@ -88,26 +94,48 @@ class AdminDashboard extends Component {
     }
     //Create and update functions
     infoSubmit = event => {
-        let data = {
-            _id: this.state._id,
-            Name: this.state.Name,
-            Regno: this.state.Regno,
-            Department: this.state.Department,
-            DOB: this.state.DOB,
-            DOJ: this.state.DOJ,
-            Gender: this.state.Gender,
-            Section: this.state.Section
+        if (this.state._id === null) {
+            let data = {
+                Name: this.state.Name,
+                Regno: this.state.Regno,
+                Department: this.state.Department,
+                DOB: this.state.DOB,
+                DOJ: this.state.DOJ,
+                Gender: this.state.Gender,
+                Section: this.state.Section
+
+            }
+            this.create(data)
+        } else {
+            let data = {
+                _id: this.state._id,
+                Name: this.state.Name,
+                Regno: this.state.Regno,
+                Department: this.state.Department,
+                DOB: this.state.DOB,
+                DOJ: this.state.DOJ,
+                Gender: this.state.Gender,
+                Section: this.state.Section
+
+            }
+            this.create(data)
         }
-        this.create(data)
         this.isCreateClose()
     }
 
     //Create and Update API call
     create = data => {
+        if (!data._id) {
+            Axios.post("http://localhost:4000/", data).then(res => {
+                this.getAll()
+            })
+        }
+        else {
             Axios.put("http://localhost:4000/update", data).then(res => {
                 this.getAll()
             })
         }
+    }
     //GET all Function
     getAll() {
         let { filterObj } = this.state
@@ -131,28 +159,28 @@ class AdminDashboard extends Component {
         }
     }
 
-    // viewButton() {
-    //     if (this.state.mode === 'update') {
-    //         return (
-    //             <MDBBtn color="success" onClick={this.infoSubmit}>Update</MDBBtn>)
-    //     }
-    //     else {
-    //         return (
-    //             <MDBBtn color="indigo" onClick={this.infoSubmit}>Create</MDBBtn>)
-    //     }
-    // }
-    // modalHead() {
-    //     if (this.state.mode === 'update') {
-    //         return (
-    //             <ModalHeader toggle={this.isCreateClose}>Update Students</ModalHeader>
-    //         )
-    //     }
-    //     else {
-    //         return (
-    //             <ModalHeader toggle={this.isCreateClose}>Creates Students</ModalHeader>
-    //         )
-    //     }
-    // }
+    viewButton() {
+        if (this.state.mode === 'update') {
+            return (
+                <MDBBtn color="success" onClick={this.infoSubmit}>Update</MDBBtn>)
+        }
+        else {
+            return (
+                <MDBBtn color="indigo" onClick={this.infoSubmit}>Create</MDBBtn>)
+        }
+    }
+    modalHead() {
+        if (this.state.mode === 'update') {
+            return (
+                <ModalHeader toggle={this.isCreateClose}>Update Students</ModalHeader>
+            )
+        }
+        else {
+            return (
+                <ModalHeader toggle={this.isCreateClose}>Creates Students</ModalHeader>
+            )
+        }
+    }
 
     // filter operations
 
@@ -190,7 +218,7 @@ class AdminDashboard extends Component {
 
 
     render() {
-        const { modal, loading } = this.state;
+        const { modal, loading, filterObj: { Department, DOJ, Section } } = this.state;
         console.log(this.state)
         return (
             <div>
@@ -201,18 +229,26 @@ class AdminDashboard extends Component {
 
                 <h3 className="text-center">Students list</h3>
                 <Row>
+                    <Col>
+                        <MDBBtn color="cyan" onClick={this.isCreate}><MDBIcon icon="plus-circle"/>Create</MDBBtn>
+                    </Col>
                     <Col sm={3} >
                         <FormGroup>
-                            <Input type="select" onChange={this.handleFilterDepartmentFilterChange} name="departmentFilter" id="departmentFilter">
+                            <Input type="select" value={Department} onChange={this.handleFilterDepartmentFilterChange} name="departmentFilter" id="departmentFilter">
                                 <option value="" >Select Department</option>
                                 <option value="CSE" >CSE</option>
                                 <option value="IT" >IT</option>
+                                <option value="ECE" >ECE</option>
+                                <option value="EEE" >EEE</option>
+                                <option value="E&I" >E&I</option>
+                                <option value="MECH" >MECH</option>
+                                <option value="ARCHI" >Architechture</option>
                             </Input>
                         </FormGroup>
                     </Col>
                     <Col sm={3} >
                         <FormGroup>
-                            <Input type="select" onChange={this.handleFilterYearFilterChange} name="departmentFilter" id="departmentFilter">
+                            <Input type="select" value={DOJ} onChange={this.handleFilterYearFilterChange} name="departmentFilter" id="departmentFilter">
                                 <option value="" >Select Year</option>
                                 <option value="2018-05-05T00:00:00.000+00:00" >1st Year</option>
                                 <option value="2017-05-05T00:00:00.000+00:00" >2nd Year</option>
@@ -223,10 +259,11 @@ class AdminDashboard extends Component {
                     </Col>
                     <Col sm={3} >
                         <FormGroup>
-                            <Input type="select" onChange={this.handleFilterSectionFilterChange} name="departmentFilter" id="departmentFilter">
+                            <Input type="select" value={Section} onChange={this.handleFilterSectionFilterChange} name="departmentFilter" id="departmentFilter">
                                 <option value="" >Select Section</option>
                                 <option value="A" >A</option>
                                 <option value="B" >B</option>
+                                <option value="C" >C</option>
                             </Input>
                         </FormGroup>
                     </Col>
@@ -269,7 +306,7 @@ class AdminDashboard extends Component {
                 </Table>
                 <div>
                     <Modal isOpen={modal}>
-                    <ModalHeader toggle={this.isCreateClose}>Update Students</ModalHeader>
+                        {this.modalHead()}
                         <ModalBody>
                             <form onSubmit={this.infoSubmit}>
                                 <div className="form-group">
@@ -316,7 +353,7 @@ class AdminDashboard extends Component {
                                 </div>
                                 <ModalFooter>
                                     <MDBBtn color="blue-grey" onClick={this.isCreateClose}>close</MDBBtn>
-                                    <MDBBtn color="success" onClick={this.infoSubmit}>Update</MDBBtn>
+                                    {this.viewButton()}
                                 </ModalFooter>
                             </form>
                         </ModalBody>

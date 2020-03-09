@@ -28,7 +28,7 @@ router.get('/get', async (req, res) => {
     try {
         const getAll = await attendance.find();
         console.log(getAll)
-        res.status(200).json(getAll);
+        res.status(200).json(getAll,);
     } catch (err) {
         console.log(err)
         res.json({ "err": err });

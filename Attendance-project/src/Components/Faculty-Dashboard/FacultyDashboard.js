@@ -33,7 +33,7 @@ class FacultyDashboard extends Component {
     getAllAttendance = () => {
         Axios.get("http://localhost:4000/Attendance/getAttendance").then(res => {
 
-            let attendance = res.data || []
+            let attendance = res.data.students || []
             attendance.sort(function (a, b) {
                 return (a.date > b.date) ? -1 : ((a.date < b.date) ? 1 : 0);
             }).reverse()

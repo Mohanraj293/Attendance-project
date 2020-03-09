@@ -24,7 +24,6 @@ const Attendacne = new Schema({
     },
     Year: {
         type: String,
-        // default:Date.now
     }
 });
 

@@ -25,3 +25,8 @@
   font-size: 25px;
   color: #F44336;
 }
+
+.random{
+  background-color: red;
+  color: #f00 !important;
+}
