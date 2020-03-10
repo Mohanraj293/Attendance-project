@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Modal, ModalHeader, ModalFooter, ModalBody, Table, Spinner, Row, Col, FormGroup, Label, Input } from 'reactstrap';
+import { Modal, ModalHeader, ModalFooter, ModalBody, Table, Spinner, Row, Col, FormGroup, Input } from 'reactstrap';
 import Navbar from '../Navbar'
 import Axios from 'axios';
 import '../../App.css';
@@ -56,7 +56,6 @@ class AdminDashboard extends Component {
     }
 
     isCreate() {
-        this.setState({ modal: true });
         this.setState({ modal: true, mode: 'create' });
     }
     //modal update
@@ -103,7 +102,6 @@ class AdminDashboard extends Component {
                 DOJ: this.state.DOJ,
                 Gender: this.state.Gender,
                 Section: this.state.Section
-
             }
             this.create(data)
         } else {
@@ -219,21 +217,20 @@ class AdminDashboard extends Component {
 
     render() {
         const { modal, loading, filterObj: { Department, DOJ, Section } } = this.state;
-        console.log(this.state)
+        const isResetRequired = Department|| DOJ|| Section
         return (
             <div>
                 <div style={{ marginBottom: '90px' }} >
                     <Navbar />
                 </div>
 
-
-                <h3 className="text-center">Students list</h3>
+                <h3 className="text-center" style={{fontWeight:'bold', marginBottom:"30px"}} >Students list</h3>
                 <Row>
                     <Col>
-                        <MDBBtn color="cyan" onClick={this.isCreate}><MDBIcon icon="plus-circle"/>Create</MDBBtn>
+                        <MDBBtn color="cyan" onClick={this.isCreate}><MDBIcon icon="plus-circle"/>  Create</MDBBtn>
                     </Col>
-                    <Col sm={3} >
-                        <FormGroup>
+                    <Col  >
+                        <FormGroup>  {/* col form group margin-top: 0.5rem;  changesss */}
                             <Input type="select" value={Department} onChange={this.handleFilterDepartmentFilterChange} name="departmentFilter" id="departmentFilter">
                                 <option value="" >Select Department</option>
                                 <option value="CSE" >CSE</option>
@@ -246,18 +243,18 @@ class AdminDashboard extends Component {
                             </Input>
                         </FormGroup>
                     </Col>
-                    <Col sm={3} >
+                    <Col  >
                         <FormGroup>
                             <Input type="select" value={DOJ} onChange={this.handleFilterYearFilterChange} name="departmentFilter" id="departmentFilter">
                                 <option value="" >Select Year</option>
-                                <option value="2018-05-05T00:00:00.000+00:00" >1st Year</option>
-                                <option value="2017-05-05T00:00:00.000+00:00" >2nd Year</option>
-                                <option value="2016-05-05T00:00:00.000+00:00" >3rd Year</option>
-                                <option value="2015-05-05T00:00:00.000+00:00" >4th Year</option>
+                                <option value="2020-05-08" >1st Year</option>
+                                <option value="2019-05-08" >2nd Year</option>
+                                <option value="2018-05-08" >3rd Year</option>
+                                <option value="2017-05-08" >4th Year</option>
                             </Input>
                         </FormGroup>
                     </Col>
-                    <Col sm={3} >
+                    <Col  >
                         <FormGroup>
                             <Input type="select" value={Section} onChange={this.handleFilterSectionFilterChange} name="departmentFilter" id="departmentFilter">
                                 <option value="" >Select Section</option>
@@ -268,7 +265,7 @@ class AdminDashboard extends Component {
                         </FormGroup>
                     </Col>
                     <Col>
-                        <MDBBtn color="deep-orange" onClick={this.handleFilterReset}>Reset</MDBBtn>
+                        {isResetRequired && <MDBBtn color="deep-orange" onClick={this.handleFilterReset}>Reset</MDBBtn>}
                     </Col>
                 </Row>
 
@@ -298,8 +295,8 @@ class AdminDashboard extends Component {
                             <td>{getDateLabel(e.DOJ)}</td>
                             <td>{e.Section}</td>
                             <td>{e.Gender}</td>
-                            <td><a color="warning" onClick={event => { this.isUpdate(e) }}><MDBIcon className="icon" data-toggle="tooltip" title="Edit" color="#xE147" icon="edit" /></a></td>
-                            <td><a color="danger" onClick={evevt => { this.del(e) }}><MDBIcon className="icon1" data-toggle="tooltip" title="Delete" far icon="trash-alt" /></a></td>
+                            <td><a color="warning" href="# " onClick={event => { this.isUpdate(e) }}><MDBIcon className="icon" data-toggle="tooltip" title="Edit" color="#xE147" icon="edit" /></a></td>
+                            <td><a color="danger" href="# " onClick={evevt => { this.del(e) }}><MDBIcon className="icon1" data-toggle="tooltip" title="Delete" far icon="trash-alt" /></a></td>
                         </tr>) : <tr><td>{!loading && 'No results found'}</td></tr>
                         }
                     </tbody>

@@ -1,7 +1,7 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const router = express.Router();
 const attendance = require('../Schema/AttendanceSchema');
+const students = require('../Schema/StudentSchema')
 
 
 //POST method
@@ -13,7 +13,8 @@ router.post('/', async (req, res) => {
             Regno: req.body.Regno,
             isPresent: req.body.isPresent,
             Department: req.body.Department,
-            Year: req.body.Year
+            Year: req.body.Year,
+            Section : req.body.Section
 
         });
         const saveStudent = await postStudent.save();
@@ -26,9 +27,12 @@ router.post('/', async (req, res) => {
 //GET  method
 router.get('/get', async (req, res) => {
     try {
-        const getAll = await attendance.find();
-        console.log(getAll)
-        res.status(200).json(getAll,);
+        const response = await [
+            attendance.find(),
+            students.find()
+        ]
+        console.log(response)
+        res.status(200).json(response,);
     } catch (err) {
         console.log(err)
         res.json({ "err": err });

@@ -22,6 +22,10 @@ const Attendacne = new Schema({
         type: String,
         required: true
     },
+    Section:{
+        type:String,
+        required:true
+    },
     Year: {
         type: String,
     }

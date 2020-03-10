@@ -30,7 +30,9 @@ const ADash = (props) => {
             <NavItem>
               <NavLink href="/status">Status</NavLink>
             </NavItem>
-            <NavLink href="#">Report</NavLink>
+            <NavItem>
+              <NavLink href="/report">Report</NavLink>
+            </NavItem>
           </Nav>
           <Nav className="ml-auto" navbar>
             <NavItem>

@@ -25,7 +25,7 @@ const FDash = (props) => {
         <Collapse isOpen={isOpen} navbar>
           <Nav className="ml-auto" navbar>
             <NavItem className="" navbar>
-              <Button  href="#" className="btn btn-danger">LOGOUT</Button>
+              <NavLink><Button  href="#" className="btn btn-danger">LOGOUT</Button></NavLink>
             </NavItem>
           </Nav>
         </Collapse>

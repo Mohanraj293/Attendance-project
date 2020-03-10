@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
-import { Modal, ModalHeader, ModalFooter, ModalBody, Table, Spinner, Row, Col, FormGroup, Label, Input } from 'reactstrap';
+import { Modal, ModalHeader, ModalFooter, ModalBody, Spinner, Row, Col, FormGroup, Input } from 'reactstrap';
 import Navbar from '../Navbar'
 import Axios from 'axios';
 import '../../App.css';
 import Calendar from 'react-datepicker';
 import {
-    MDBIcon, MDBBtn, MDBInput, MDBCard, MDBCardBody, MDBCardImage, MDBCardTitle, MDBCardText, MDBCol,
+    MDBBtn, MDBCard, MDBCardBody, MDBCardTitle, MDBCardText, MDBCol,
     MDBRow, Container
 } from "mdbreact";
-import DatePicker from "react-datepicker";
 
 const clearNullProp = (obj = {}) => {
     for (const key in obj) {
@@ -19,11 +18,7 @@ const clearNullProp = (obj = {}) => {
     return obj
 }
 
-const getDateLabel = (date, format) => {
-    let dateObj = new Date(date)
-    if (format === 'slash') return dateObj.toLocaleDateString()
-    return dateObj.toDateString()
-}
+
 
 const initFilterObj = {
     Department: '',
@@ -118,7 +113,7 @@ class StatusList extends Component {
 
 
     render() {
-        const { loading } = this.state;
+        const { loading ,Section, DOJ,Department} = this.state.filterObj;
         const { date } = this.state
         const dateTimeString = date.toDateString() //+ '  ' + date.toLocaleTimeString()
         return (
@@ -130,27 +125,32 @@ class StatusList extends Component {
                 <Row>
                     <Col sm={3} >
                         <FormGroup>
-                            <Input type="select" onChange={this.handleFilterDepartmentFilterChange} name="departmentFilter" id="departmentFilter">
+                            <Input type="select" value={Department} onChange={this.handleFilterDepartmentFilterChange} name="departmentFilter" id="departmentFilter">
                                 <option value="" >Select Department</option>
                                 <option value="CSE" >CSE</option>
                                 <option value="IT" >IT</option>
+                                <option value="ECE" >ECE</option>
+                                <option value="EEE" >EEE</option>
+                                <option value="E&I" >E&I</option>
+                                <option value="MECH" >MECH</option>
+                                <option value="ARCHI" >Architechture</option>
                             </Input>
                         </FormGroup>
                     </Col>
                     <Col sm={3} >
                         <FormGroup>
-                            <Input type="select" onChange={this.handleFilterYearFilterChange} name="departmentFilter" id="departmentFilter">
+                            <Input type="select" value={DOJ} onChange={this.handleFilterYearFilterChange} name="departmentFilter" id="departmentFilter">
                                 <option value="" >Select Year</option>
-                                <option value="2018-05-05T00:00:00.000+00:00" >1st Year</option>
-                                <option value="2017-05-05T00:00:00.000+00:00" >2nd Year</option>
-                                <option value="2016-05-05T00:00:00.000+00:00" >3rd Year</option>
-                                <option value="2015-05-05T00:00:00.000+00:00" >4th Year</option>
+                                <option value="2020-05-08">1st Year</option>
+                                <option value="2019-05-08">2nd Year</option>
+                                <option value="2018-05-08">3rd Year</option>
+                                <option value="2017-05-08">4th Year</option>
                             </Input>
                         </FormGroup>
                     </Col>
                     <Col sm={3} >
                         <FormGroup>
-                            <Input type="select" onChange={this.handleFilterSectionFilterChange} name="departmentFilter" id="departmentFilter">
+                            <Input type="select" value={Section} onChange={this.handleFilterSectionFilterChange} name="departmentFilter" id="departmentFilter">
                                 <option value="" >Select Section</option>
                                 <option value="A" >A</option>
                                 <option value="B" >B</option>
@@ -159,17 +159,16 @@ class StatusList extends Component {
                         </FormGroup>
                     </Col>
                     <Col sm={3}>
-                        <MDBBtn color="deep-orange" onClick={this.handleFilterReset}>Reset</MDBBtn>
+                        <MDBBtn color="deep-orange" onClick={this.handleFilterReset}>Reset</MDBBtn>  {/* Hide reset no filter */}
                     </Col>
                 </Row>
                 <MDBRow className="row" style={{ marginLeft: '10px' }}>
                     {loading && <Spinner color="success" />}
-            
-                    {
+                    { Department && DOJ && Section ?
                         this.state.data.length > 0 && !loading ? this.state.data.map((e, i) =>
-                            <MDBCol className="col-sm-3 mb-4">
+                            <MDBCol className="col-sm-3 mb-4" key={e._id}>
                                 <MDBCard style={{ width: "18rem" }}>
-                                    <MDBCardBody>
+                                    <MDBCardBody >
                                         <MDBCardTitle onClick={this.studentModal}>{e.Name}</MDBCardTitle>
                                         <MDBCardText>Regno : {e.Regno}</MDBCardText>
                                         <MDBCardText>Dept : {e.Department} - {e.Section} Section </MDBCardText>
@@ -177,23 +176,23 @@ class StatusList extends Component {
                                     </MDBCardBody>
                                 </MDBCard>
                             </MDBCol>
-                        ) : <a>{!loading && 'No results found'}</a>
+                        ) : <h6>{!loading && 'No results found'}</h6> : <h6>Select All Fields</h6>  // changesss center this, 
                     }
                 </MDBRow>
                 <div>
                     <Container>
                         <Modal isOpen={this.state.modal1}>
                             <ModalHeader>Status</ModalHeader>
-                            <div className="calendar">
-                                <Calendar
+                            <ModalBody className="calendar">  
+                                {/* <Calendar
                                     dayClassName={date =>
                                         { console.log(date); return date.getDate(date) < Math.random() * 31 ? "random" : undefined}
                                       }
                                     onChange={this.onChange}
                                     value={this.state.date}
                                 />
-                                {dateTimeString}
-                            </div>
+                                {dateTimeString} */}
+                            </ModalBody>
                             <ModalFooter>
                                 <MDBBtn color="secondary" onClick={this.studentModalClose}>Close</MDBBtn>
                             </ModalFooter>
