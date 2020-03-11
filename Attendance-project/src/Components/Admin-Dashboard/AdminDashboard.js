@@ -225,37 +225,37 @@ class AdminDashboard extends Component {
                 </div>
 
                 <h3 className="text-center" style={{fontWeight:'bold', marginBottom:"30px"}} >Students list</h3>
-                <Row>
+                <Row style={{paddingLeft:"20px"}}>
                     <Col>
                         <MDBBtn color="cyan" onClick={this.isCreate}><MDBIcon icon="plus-circle"/>  Create</MDBBtn>
                     </Col>
-                    <Col  >
-                        <FormGroup>  {/* col form group margin-top: 0.5rem;  changesss */}
+                    <Col >
+                        <FormGroup style={{marginTop:"0.6rem"}}>  {/* col form group margin-top: 0.5rem;  changesss */}
                             <Input type="select" value={Department} onChange={this.handleFilterDepartmentFilterChange} name="departmentFilter" id="departmentFilter">
                                 <option value="" >Select Department</option>
                                 <option value="CSE" >CSE</option>
                                 <option value="IT" >IT</option>
                                 <option value="ECE" >ECE</option>
                                 <option value="EEE" >EEE</option>
-                                <option value="E&I" >E&I</option>
+                                <option value="EI" >EI</option>
                                 <option value="MECH" >MECH</option>
                                 <option value="ARCHI" >Architechture</option>
                             </Input>
                         </FormGroup>
                     </Col>
-                    <Col  >
-                        <FormGroup>
+                    <Col>
+                        <FormGroup style={{marginTop:"0.6rem"}}>
                             <Input type="select" value={DOJ} onChange={this.handleFilterYearFilterChange} name="departmentFilter" id="departmentFilter">
                                 <option value="" >Select Year</option>
-                                <option value="2020-05-08" >1st Year</option>
-                                <option value="2019-05-08" >2nd Year</option>
-                                <option value="2018-05-08" >3rd Year</option>
-                                <option value="2017-05-08" >4th Year</option>
+                                <option value="2020" >1st Year</option>
+                                <option value="2019" >2nd Year</option>
+                                <option value="2018" >3rd Year</option>
+                                <option value="2017" >4th Year</option>
                             </Input>
                         </FormGroup>
                     </Col>
-                    <Col  >
-                        <FormGroup>
+                    <Col>
+                        <FormGroup style={{marginTop:"0.6rem"}}>
                             <Input type="select" value={Section} onChange={this.handleFilterSectionFilterChange} name="departmentFilter" id="departmentFilter">
                                 <option value="" >Select Section</option>
                                 <option value="A" >A</option>
@@ -292,7 +292,7 @@ class AdminDashboard extends Component {
                             <td>{e.Regno}</td>
                             <td>{e.Department}</td>
                             <td>{getDateLabel(e.DOB, 'slash')}</td>
-                            <td>{getDateLabel(e.DOJ)}</td>
+                            <td>{e.DOJ}</td>
                             <td>{e.Section}</td>
                             <td>{e.Gender}</td>
                             <td><a color="warning" href="# " onClick={event => { this.isUpdate(e) }}><MDBIcon className="icon" data-toggle="tooltip" title="Edit" color="#xE147" icon="edit" /></a></td>

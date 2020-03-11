@@ -1,16 +1,39 @@
 import React, { Component } from 'react';
 import Navbar from '../Navbar';
-import { Table } from 'reactstrap';
+import { Table, Spinner } from 'reactstrap';
 import DatePicker from "react-datepicker";
 import { MDBBtn } from 'mdbreact';
+import Axios from 'axios'
 
 export default class Report extends Component {
 constructor(props){
     super(props);
     this.state = {
-        startDate: new Date()
+        startDate: new Date(),
+        loading:false,
+        studentsData:[],
+        attendanceData: [],
+            present: [],
+            absent: [],
+            onDuty: [],
+
     }
 }
+
+componentDidMount() {
+    this.getAllStudents();
+    
+}
+
+getAllStudents = () => {
+    Axios.get("http://localhost:4000/", ).then(res => { 
+        this.setState({
+            studentsData: res.data
+        })
+        console.log(this.state.studentsData)
+    })
+}
+
 
     chooseDate = date => {
         this.setState({
@@ -18,6 +41,8 @@ constructor(props){
         });
       };
     render() {
+        const { studentsData, loading, present, absent, onDuty } = this.state;
+
         return (
             <div>
                 <div style={{ marginBottom: '80px' }} >
@@ -40,15 +65,24 @@ constructor(props){
                                 <th>Girls</th>
                                 <th>Present</th>
                                 <th>Absent</th>
+                                <th>OnDuty</th>
                             </tr>
                         </thead>
                         <tbody>
-                            
+                            {loading && <Spinner color="dark"></Spinner>}
+                            {studentsData.length > 0 && !loading ? studentsData.map((stud) => <tr key={stud._id}>
+                                <td>{stud.Name.length}</td>
+                                <td>{stud.Section.length}</td>
+                                <td>{stud.Gender.length}</td>
+                                <td></td>
+                                
+                            </tr>) : <td>{!loading && 'No results found'}</td>
+                            }
                         </tbody>
                     </Table>
 
                     <div style={{textAlign:"center"}}>
-                        <MDBBtn gradient="blue" size="lg">DOWNLOAD</MDBBtn>
+                        <MDBBtn gradient="blue" size="lg">DOWNLOAD REPORT</MDBBtn>
                     </div>
 
                 </div>

@@ -25,11 +25,11 @@ const Students = new Schema({
         required:true
     },
     DOJ :{
-        type: Date,
-        default: Date.now,
+        type: Number,
+        min: 1000,
+        max: 9999,
         required:true
     },
-   
     Gender : {
         type: String,
         required: true,

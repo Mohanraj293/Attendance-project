@@ -27,16 +27,13 @@ router.post('/', async (req, res) => {
 //GET  method
 router.get('/get', async (req, res) => {
     try {
-        const response = await [
-            attendance.find(),
-            students.find()
-        ]
+        const response = await attendance.find()
         console.log(response)
         res.status(200).json(response,);
     } catch (err) {
         console.log(err)
         res.json({ "err": err });
-    }
+    } 
 });
 
 //GET  method
@@ -45,7 +42,7 @@ router.post('/setAttendance', async (req, res) => {
         let records = req.body
         attendance.insertMany(records).then(() => {
             res.status(200).json({ success: true });
-        })
+        }) 
     } catch (err) {
         res.json({ "err": err });
     }
@@ -53,10 +50,12 @@ router.post('/setAttendance', async (req, res) => {
 
 
 router.get('/getAttendance', async (req, res) => {
-    // console.log('/getAttendance')
+    const query = req.query
+    console.log('/getAttendance', query)
+
+
     try {
-        const getAll = await attendance.find();
-        console.log(getAll)
+        const getAll = await attendance.find(query);
         res.status(200).json(getAll);
     } catch (err) {
         console.log(err)
