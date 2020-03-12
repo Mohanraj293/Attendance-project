@@ -20,7 +20,7 @@ const clearNullProp = (obj = {}) => {
 
 const initFilterObj = {
     Department: '',
-    DOJ: '',
+    Year: '',
     Section: ''
 }
 
@@ -37,13 +37,17 @@ class StatusList extends Component {
             Name: "",
             Regno: "",
             Department: "",
-            DOJ: "",
+            Year: "",
             DOB: "",
             Gender: "",
             Section: "",
             isEdit: false,
             mode: 'update',
             filterObj: { ...initFilterObj },
+            attendanceData: [],
+            present: [],
+            absent: [],
+            onDuty: [],
             date: new Date(),
         }
     }
@@ -60,10 +64,52 @@ class StatusList extends Component {
         Axios.get("http://localhost:4000/", { params: filterObj }).then(res => {
             this.setState({
                 data: res.data
-            })
+            }, this.getAllAttendance)
         })
     }
     // filter operations
+
+    getAllAttendance = () => {
+        
+        let { filterObj } = this.state
+        filterObj = clearNullProp(filterObj)
+        
+        Axios.get("http://localhost:4000/Attendance/getAttendance", { params: filterObj }).then(res => {
+            // check api calling method,  param is missing with additionally date para,
+            let attendance = res.data || []
+            attendance.sort(function (a, b) {
+                return (a.date > b.date) ? -1 : ((a.date < b.date) ? 1 : 0);
+            }).reverse()
+            attendance = this.uniqueAttendanceRecords(attendance)
+            this.setState({
+                attendanceData: attendance || []
+            }, this.differentiateAttendance)
+        })
+    }
+
+    uniqueAttendanceRecords = (items) => {
+        const s = new Set();
+        return items.filter((item) => {
+            if (s.has(item.Regno)) {
+                return false;
+            }
+            s.add(item.Regno);
+            return true;
+        });
+    }
+
+    differentiateAttendance = () => {
+        const { attendanceData } = this.state
+        const present = attendanceData.filter(e => e.isPresent === 'Present').map(e => e.Regno)
+        const absent = attendanceData.filter(e => e.isPresent === 'Absent').map(e => e.Regno)
+        const onDuty = attendanceData.filter(e => e.isPresent === 'Onduty').map(e => e.Regno)
+
+        console.log(present.length, 
+            absent.length, 
+            onDuty.length, )
+        
+        this.setState({ present, absent, onDuty })
+    }
 
     handleFilterReset = () => {
         this.setState({ filterObj: { ...initFilterObj } }, this.getAll)
@@ -83,7 +129,7 @@ class StatusList extends Component {
 
         let { filterObj } = this.state
 
-        filterObj = { ...filterObj, DOJ: value }
+        filterObj = { ...filterObj, Year: value }
 
         this.setState({ filterObj }, this.getAll)
     }
@@ -111,10 +157,10 @@ class StatusList extends Component {
 
 
     render() {
-        const {  loading, Section, DOJ, Department } = this.state.filterObj;
-        const { date, data } = this.state
+        const {  loading, Section, Year, Department } = this.state.filterObj;
+        const { date, data,present, absent, onDuty } = this.state
         const dateTimeString = date.toDateString() //+ '  ' + date.toLocaleTimeString()
-        const isResetRequired = Department || DOJ || Section
+        const isResetRequired = Department || Year || Section
         return (
             <div>
                 <div style={{ marginBottom: '50px' }} >
@@ -138,7 +184,7 @@ class StatusList extends Component {
                     </Col>
                     <Col >
                         <FormGroup style={{ marginTop: "0.6rem" }}>
-                            <Input type="select" value={DOJ} onChange={this.handleFilterYearFilterChange} name="departmentFilter" id="departmentFilter">
+                            <Input type="select" value={Year} onChange={this.handleFilterYearFilterChange} name="departmentFilter" id="departmentFilter">
                                 <option value="" >Select Year</option>
                                 <option value="2020">1st Year</option>
                                 <option value="2019">2nd Year</option>
@@ -171,14 +217,17 @@ class StatusList extends Component {
                 </Row>
                 <MDBRow className="row" style={{ marginLeft: '10px' }}>
                     {loading && <Spinner color="success" />}
-                    {Department && DOJ && Section ?
+                    {Department && Year && Section ?
                         data.length > 0 && !loading ? data.map((e) =>
                             <MDBCol className="col-sm-3 mb-4" key={e._id}>
-                                <MDBCard style={{ width: "18rem" }}>
+                                <MDBCard className={'redBackground'} style={{ width: "18rem", backGroundColor: 'red' }}>
                                     <MDBCardBody >
                                         <MDBCardTitle onClick={this.studentModal}>{e.Name}</MDBCardTitle>
                                         <MDBCardText>Regno : {e.Regno}</MDBCardText>
                                         <MDBCardText>Dept : {e.Department} - {e.Section} Section </MDBCardText>
+                                        <MDBCardText>{present.includes(e.Regno) && 'Present' }</MDBCardText>
+                                        <MDBCardText>{absent.includes(e.Regno) && 'Absent' }</MDBCardText>
+                                        <MDBCardText>{onDuty.includes(e.Regno) && 'OnDuty' }</MDBCardText>
                                     </MDBCardBody>
                                 </MDBCard>
                             </MDBCol>

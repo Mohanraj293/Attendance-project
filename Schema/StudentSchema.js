@@ -24,7 +24,7 @@ const Students = new Schema({
         default: Date.now,
         required:true
     },
-    DOJ :{
+    Year :{
         type: Number,
         min: 1000,
         max: 9999,

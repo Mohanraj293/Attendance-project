@@ -2,7 +2,7 @@
   "students": [
     {
       "id": 1,
-      "DOJ": 2020,
+      "Year": 2020,
       "currentSemester": 4,
       "name": "student",
       "regNo": 3101123123123,
@@ -12,7 +12,7 @@
     },
     {
       "id": 2,
-      "DOJ": 2020,
+      "Year": 2020,
       "currentSemester": 4,
       "name": "student2",
       "regNo": 3101123123123,
@@ -21,7 +21,7 @@
     },
     {
       "id": 3,
-      "DOJ": 2020,
+      "Year": 2020,
       "currentSemester": 4,
       "name": "student3",
       "regNo": 3101123123123,
@@ -30,7 +30,7 @@
     },
     {
       "id": 4,
-      "DOJ": 2020,
+      "Year": 2020,
       "currentSemester": 4,
       "name": "student4",
       "regNo": 3101123123123,
@@ -39,7 +39,7 @@
     },
     {
       "id": 5,
-      "DOJ": 2020,
+      "Year": 2020,
       "currentSemester": 4,
       "name": "student5",
       "regNo": 3101123123123,

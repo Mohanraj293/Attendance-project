@@ -23,7 +23,7 @@ const getDateLabel = (date, format) => {
 
 const initFilterObj = {
     Department: '',
-    DOJ: '',
+    Year: '',
     Section: ''
 }
 
@@ -41,7 +41,7 @@ class AdminDashboard extends Component {
             Name: "",
             Regno: "",
             Department: "",
-            DOJ: "",
+            Year: "",
             DOB: "",
             Gender: "",
             Section: "",
@@ -74,7 +74,7 @@ class AdminDashboard extends Component {
             Name: "",
             Regno: "",
             Department: "",
-            DOJ: "",
+            Year: "",
             DOB: "",
             Gender: "",
             Section: "",
@@ -99,7 +99,7 @@ class AdminDashboard extends Component {
                 Regno: this.state.Regno,
                 Department: this.state.Department,
                 DOB: this.state.DOB,
-                DOJ: this.state.DOJ,
+                Year: this.state.Year,
                 Gender: this.state.Gender,
                 Section: this.state.Section
             }
@@ -111,7 +111,7 @@ class AdminDashboard extends Component {
                 Regno: this.state.Regno,
                 Department: this.state.Department,
                 DOB: this.state.DOB,
-                DOJ: this.state.DOJ,
+                Year: this.state.Year,
                 Gender: this.state.Gender,
                 Section: this.state.Section
 
@@ -200,7 +200,7 @@ class AdminDashboard extends Component {
 
         let { filterObj } = this.state
 
-        filterObj = { ...filterObj, DOJ: value }
+        filterObj = { ...filterObj, Year: value }
 
         this.setState({ filterObj }, this.getAll)
     }
@@ -216,8 +216,8 @@ class AdminDashboard extends Component {
 
 
     render() {
-        const { modal, loading, filterObj: { Department, DOJ, Section } } = this.state;
-        const isResetRequired = Department|| DOJ|| Section
+        const { modal, loading, filterObj: { Department, Year, Section } } = this.state;
+        const isResetRequired = Department|| Year|| Section
         return (
             <div>
                 <div style={{ marginBottom: '90px' }} >
@@ -245,7 +245,7 @@ class AdminDashboard extends Component {
                     </Col>
                     <Col>
                         <FormGroup style={{marginTop:"0.6rem"}}>
-                            <Input type="select" value={DOJ} onChange={this.handleFilterYearFilterChange} name="departmentFilter" id="departmentFilter">
+                            <Input type="select" value={Year} onChange={this.handleFilterYearFilterChange} name="departmentFilter" id="departmentFilter">
                                 <option value="" >Select Year</option>
                                 <option value="2020" >1st Year</option>
                                 <option value="2019" >2nd Year</option>
@@ -277,7 +277,7 @@ class AdminDashboard extends Component {
                             <th>Reg.No</th>
                             <th>Department</th>
                             <th>DOB</th>
-                            <th>DOJ</th>
+                            <th>Year</th>
                             <th>Section</th>
                             <th>Gender</th>
                             <th>Edit</th>
@@ -292,7 +292,7 @@ class AdminDashboard extends Component {
                             <td>{e.Regno}</td>
                             <td>{e.Department}</td>
                             <td>{getDateLabel(e.DOB, 'slash')}</td>
-                            <td>{e.DOJ}</td>
+                            <td>{e.Year}</td>
                             <td>{e.Section}</td>
                             <td>{e.Gender}</td>
                             <td><a color="warning" href="# " onClick={event => { this.isUpdate(e) }}><MDBIcon className="icon" data-toggle="tooltip" title="Edit" color="#xE147" icon="edit" /></a></td>
@@ -331,10 +331,10 @@ class AdminDashboard extends Component {
                                         value={this.state.DOB} />
                                 </div>
                                 <div className="form-group">
-                                    <MDBInput label="Date Of Join" type="text" className="form-control" placeholder="DOJ"
+                                    <MDBInput label="Date Of Join" type="text" className="form-control" placeholder="Year"
                                         onChange={this.infoChange}
-                                        name="DOJ"
-                                        value={this.state.DOJ} />
+                                        name="Year"
+                                        value={this.state.Year} />
                                 </div>
                                 <div className="form-group">
                                     <MDBInput label="Gender" type="text" className="form-control" placeholder="Gender"

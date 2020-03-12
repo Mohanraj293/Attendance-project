@@ -17,7 +17,7 @@ const clearNullProp = (obj = {}) => {
 
 const initFilterObj = {
     Department: '',
-    DOJ: '',
+    Year: '',
     Section: ''
 }
 const getDateLabel = (date, format) => {
@@ -43,7 +43,7 @@ class FacultyDashboard extends Component {
             Name: "",
             Regno: "",
             Department: "",
-            DOJ: "",
+            Year: "",
             DOB: "",
             Gender: "",
             Section: "",
@@ -127,11 +127,11 @@ class FacultyDashboard extends Component {
         newAttendance = newAttendance.filter(e => e.Regno != student.Regno)
 
         let newRecord = {
-            Date: date.toISOString(),
+            Date: date.toISOString().substring(0,10),
             Regno: student.Regno,
             isPresent: attendance,
             Department: student.Department,
-            Year: student.DOJ,
+            Year: student.Year,
             Section: student.Section
         }
 
@@ -160,7 +160,7 @@ class FacultyDashboard extends Component {
 
         let { filterObj } = this.state
 
-        filterObj = { ...filterObj, DOJ: value }
+        filterObj = { ...filterObj, Year: value }
 
         this.setState({ filterObj }, this.getAllStudents)
     }
@@ -183,10 +183,10 @@ class FacultyDashboard extends Component {
 
     render() {
 
-        const { studentsData, loading, present, absent, onDuty, filterObj: { Department, DOJ, Section } } = this.state;
+        const { studentsData, loading, present, absent, onDuty, filterObj: { Department, Year, Section } } = this.state;
         console.log(this.state)
         const dateObj = new Date();
-        const isResetRequired = Department || DOJ || Section
+        const isResetRequired = Department || Year || Section
         return (
             <div>
                 <FDash />
@@ -211,7 +211,7 @@ class FacultyDashboard extends Component {
                     </Col>
                     <Col>
                         <FormGroup style={{ marginTop: "0.6rem" }}>
-                            <Input type="select" value={DOJ} onChange={this.handleFilterYearFilterChange} name="yearFilter" id="yearFilter">
+                            <Input type="select" value={Year} onChange={this.handleFilterYearFilterChange} name="yearFilter" id="yearFilter">
                                 <option value="" >Select Year</option>
                                 <option value="2020">1st Year</option>
                                 <option value="2019">2nd Year</option>
@@ -248,7 +248,7 @@ class FacultyDashboard extends Component {
                             <th>#</th>
                             <th>Name</th>
                             <th>RegNo</th>
-                            <th>DOJ</th>
+                            <th>Year</th>
                             <th>Department</th>
                             <th>Section</th>
                             <th>Gender</th>
@@ -256,14 +256,14 @@ class FacultyDashboard extends Component {
                             {/* <th>Edit</th> */}
                         </tr>
                     </thead>
-                    {Department && DOJ && Section ?
+                    {Department && Year && Section ?
                         <tbody>
                             {loading && <Spinner color="success" />}
                             {studentsData.length > 0 && !loading ? studentsData.map((stud, i) => <tr key={stud._id}>
                                 <td>{i + 1}</td>
                                 <td>{stud.Name}</td>
                                 <td>{stud.Regno}</td>
-                                <td>{stud.DOJ}</td>
+                                <td>{stud.Year}</td>
                                 <td>{stud.Department}</td>
                                 <td>{stud.Section}</td>
                                 <td>{stud.Gender}</td>

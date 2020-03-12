@@ -12,7 +12,7 @@ router.post('/', async (req, res) => {
             Regno: req.body.Regno,
             Department: req.body.Department,
             DOB: req.body.DOB,
-            DOJ: req.body.DOJ,
+            Year: req.body.Year,
             Gender: req.body.Gender,
             Section: req.body.Section
         });
@@ -72,7 +72,7 @@ router.put('/update', async (req, res) => {
                 Regno: req.body.Regno,
                 Department: req.body.Department,
                 DOB: req.body.DOB,
-                DOJ: req.body.DOJ,
+                Year: req.body.Year,
                 Gender: req.body.Gender,
                 Section: req.body.Section
             }
