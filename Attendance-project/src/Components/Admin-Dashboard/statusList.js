@@ -21,7 +21,7 @@ const clearNullProp = (obj = {}) => {
 const initFilterObj = {
     Department: '',
     Year: '',
-    Section: ''
+    Section: '',
 }
 
 class StatusList extends Component {
@@ -142,6 +142,10 @@ class StatusList extends Component {
 
         this.setState({ filterObj }, this.getAll)
     }
+    handleFilterDateChange = (date) => {
+        console.log(date)
+        this.setState({ date : date }, this.getAll)
+    }
 
     //Student Modal
     studentModal = () => {
@@ -155,11 +159,10 @@ class StatusList extends Component {
         })
     }
 
-
     render() {
         const {  loading, Section, Year, Department } = this.state.filterObj;
-        const { date, data,present, absent, onDuty } = this.state
-        const dateTimeString = date.toDateString() //+ '  ' + date.toLocaleTimeString()
+        const { date , data,present, absent, onDuty } = this.state
+        // const dateTimeString = date.toDateString() //+ '  ' + date.toLocaleTimeString()
         const isResetRequired = Department || Year || Section
         return (
             <div>
@@ -205,10 +208,9 @@ class StatusList extends Component {
                     </Col>
                     <Col>
                         <div  style={{ marginTop: "0.8rem" }}>
-                        <DatePicker 
-                           
-                            selected={this.state.startDate}
-                            onChange={this.handleChange}
+                        <DatePicker                    
+                            onChange={(date) => this.handleFilterDateChange(date)}
+                            selected={this.state.date}
                         /></div>
                     </Col>
                     <Col>
@@ -240,14 +242,7 @@ class StatusList extends Component {
                         <Modal isOpen={this.state.modal1}>
                             <ModalHeader>Status</ModalHeader>
                             <ModalBody className="calendar">
-                                <DatePicker
-                                    dayClassName={date =>
-                                        { console.log(date); return date.getDate(date) < Math.random() * 31 ? "random" : undefined}
-                                      }
-                                    onChange={this.onChange}
-                                    value={this.state.date}
-                                />
-                                {dateTimeString}
+                                
                             </ModalBody>
                             <ModalFooter>
                                 <MDBBtn color="secondary" onClick={this.studentModalClose}>Close</MDBBtn>
